@@ -13,20 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddInfrastructure();
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).GetTypeInfo().Assembly);
     cfg.RegisterServicesFromAssembly(typeof(GetProductsQuery).GetTypeInfo().Assembly);
 });
 
-builder.Services.AddDbContext<EfDbContext>(x =>
-{
-    x.UseSqlite(optionsBuilder => optionsBuilder.MigrationsAssembly("CleanArchitecture.Infrastructure"));
-});
+builder.Services.AddDbContext<EfDbContext>();
 
-builder.Services.AddTransient<IEfDbContext, EfDbContext>();
-builder.Services.AddTransient<IDapperDbContext, DapperDbContext>();
+builder.Services.AddTransient<DbContext, EfDbContext>();
+builder.Services.AddTransient<IDataServiceFactory, DataServiceFactory>();
 
 SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
 SqlMapper.RemoveTypeMap(typeof(Guid));

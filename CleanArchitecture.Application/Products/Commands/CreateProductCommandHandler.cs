@@ -1,26 +1,27 @@
-﻿using CleanArchitecture.Domain.Entities;
+﻿using CleanArchitecture.Domain.DomainObjects;
 using CleanArchitecture.Domain.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace CleanArchitecture.Application.Products.Commands;
 
 internal sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result>
 {
-    private readonly IEfDbContext _dbContext;
+    private readonly IDataServiceFactory _dataServiceFactory;
 
-
-    public CreateProductCommandHandler(IEfDbContext dbContext)
+    public CreateProductCommandHandler(IDataServiceFactory dataServiceFactory)
     {
-        _dbContext = dbContext;
+        _dataServiceFactory = dataServiceFactory;
     }
 
     public async Task<Result> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var name = request.Name;
-        Product product = new(Guid.NewGuid(), request.Name);
+        var product = new Product() {Name = request.Name};
 
-        _dbContext.Products.Add(product);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        IDataService<Product> dataService = _dataServiceFactory.CreateService<Product>();
+        dataService.Add(product);
+
+        await _dataServiceFactory.SaveChangesAsync(cancellationToken);
 
         return new Result() { IsSuccess = true };
     }

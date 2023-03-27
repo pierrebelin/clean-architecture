@@ -1,4 +1,4 @@
-﻿using CleanArchitecture.Domain.Entities;
+﻿using CleanArchitecture.Domain.DomainObjects;
 using CleanArchitecture.Domain.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,16 +7,17 @@ namespace CleanArchitecture.Application.Products.Queries;
 
 internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, IEnumerable<Product>>
 {
-    private readonly IDapperDbContext _dbContext;
+    private readonly IDataServiceFactory _dataServiceFactory;
 
-    public GetProductsQueryHandler(IDapperDbContext dbContext)
+    public GetProductsQueryHandler(IDataServiceFactory dataServiceFactory)
     {
-        _dbContext = dbContext;
+        _dataServiceFactory = dataServiceFactory;
     }
 
     public async Task<IEnumerable<Product>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        var products = _dbContext.Query<Product>(@$"SELECT {nameof(Product.Id)}, {nameof(Product.Name)} FROM Products");
+        var dataService = _dataServiceFactory.CreateService<Product>();
+        var products = await dataService.GetAllAsync();
         return products;
     }
 }

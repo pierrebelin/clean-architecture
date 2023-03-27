@@ -1,4 +1,4 @@
-﻿using CleanArchitecture.Domain.Entities;
+﻿using CleanArchitecture.Domain.DomainObjects;
 using MediatR;
 
 namespace CleanArchitecture.Application.Products.Queries;

@@ -396,3 +396,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+CleanArchitecture.App/db.sqlite-shm
+CleanArchitecture.App/db.sqlite-wal

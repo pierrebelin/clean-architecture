@@ -1,6 +1,6 @@
 using CleanArchitecture.Application.Products.Commands;
 using CleanArchitecture.Application.Products.Queries;
-using CleanArchitecture.Domain.Entities;
+using CleanArchitecture.Infrastructure.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +24,13 @@ namespace CleanArchitecture.App.Controllers
         {
             var result = await _mediator.Send(new GetProductsQuery(), cancellationToken);
             return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProduct(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetProductQuery(id), cancellationToken);
+            return result is not null ? Ok(result) : NotFound();
         }
 
         [HttpPost("")]

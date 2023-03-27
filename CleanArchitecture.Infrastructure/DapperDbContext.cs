@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 
 namespace CleanArchitecture.Infrastructure;
 
-public class DapperDbContext : IDapperDbContext, IDisposable
+public class DapperDbContext : IDisposable
 {
     public SqliteConnection _dbConnection { get; }
     private readonly SqliteConnectionStringBuilder _connectionStringBuilder;
@@ -42,8 +42,13 @@ public class DapperDbContext : IDapperDbContext, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public IEnumerable<T> Query<T>(string sql)
+    public Task<IEnumerable<T>> Query<T>(string sql)
     {
-        return _dbConnection.Query<T>(sql);
+        return _dbConnection.QueryAsync<T>(sql);
+    }
+
+    public Task<T> QueryFirstOrDefaultAsync<T>(string sql, object? param = null)
+    {
+        return _dbConnection.QueryFirstOrDefaultAsync<T>(sql, param);
     }
 }
