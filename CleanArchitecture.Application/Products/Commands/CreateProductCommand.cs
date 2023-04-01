@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using CleanArchitecture.Domain.DomainObjects;
+using MediatR;
 
 namespace CleanArchitecture.Application.Products.Commands;
 
-public record CreateProductCommand(string Name) : IRequest<Result>;
+public record CreateProductCommand(string Name) : IRequest<Result<bool>>;
 
 //public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result> where TCommand: ICommand { }
 //public interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, Result<TResponse>> where TCommand: ICommand<TResponse> { }

@@ -23,6 +23,10 @@ public static class DependencyInjection
         TypeAdapterConfig<Product, Domain.DomainObjects.Product>
             .NewConfig()
             .TwoWays();
-            //.Map(dest => dest.FullName, src => $"{src.Title} {src.FirstName} {src.LastName}");
+        //.Map(dest => dest.FullName, src => $"{src.Title} {src.FirstName} {src.LastName}");
+
+        TypeAdapterConfig<Customer, Domain.DomainObjects.Customer>
+            .NewConfig()
+            .TwoWays();
     }
 }

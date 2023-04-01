@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Application.Products.Queries;
 
-internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, IEnumerable<Product>>
+internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, Result<IEnumerable<Product>>>
 {
     private readonly IDataServiceFactory _dataServiceFactory;
 
@@ -14,11 +14,11 @@ internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery
         _dataServiceFactory = dataServiceFactory;
     }
 
-    public async Task<IEnumerable<Product>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Product>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
         var dataService = _dataServiceFactory.CreateService<Product>();
         var products = await dataService.GetAllAsync();
-        return products;
+        return new Result<IEnumerable<Product>>() {Value = products};
     }
 }
 

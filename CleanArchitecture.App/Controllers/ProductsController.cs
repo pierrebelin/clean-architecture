@@ -23,21 +23,21 @@ namespace CleanArchitecture.App.Controllers
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts(CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetProductsQuery(), cancellationToken);
-            return Ok(result);
+            return result.IsSuccess ? Ok(result.Value) : NotFound();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProduct(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<Product>> GetProduct(Guid id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetProductQuery(id), cancellationToken);
-            return result is not null ? Ok(result) : NotFound();
+            return result.IsSuccess ? Ok(result.Value) : NotFound();
         }
 
         [HttpPost("")]
-        public async Task<ActionResult> AddProduct([FromBody] CreateProductCommand product, CancellationToken cancellationToken)
+        public async Task<ActionResult<bool>> AddProduct([FromBody] CreateProductCommand product, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(product, cancellationToken);
-            return result.IsSuccess ? Ok() : BadRequest();
+            return result.IsSuccess ? Ok(result.Value) : NotFound();
         }
     }
 }

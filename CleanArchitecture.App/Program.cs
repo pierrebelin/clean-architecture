@@ -1,10 +1,13 @@
 using Dapper;
 using System.Reflection;
+using CleanArchitecture.Application.Customers.Commands;
+using CleanArchitecture.Application.Customers.Queries;
 using CleanArchitecture.Application.Products.Commands;
 using CleanArchitecture.Application.Products.Queries;
 using CleanArchitecture.Domain.Persistence;
 using CleanArchitecture.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,11 @@ builder.Services.AddInfrastructure();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(GetProductsQuery).GetTypeInfo().Assembly);
+});
+builder.Services.AddMediator(x =>
+{
+    x.AddConsumersFromNamespaceContaining<GetCustomersConsumer>();
+    x.AddConsumersFromNamespaceContaining<CreateCustomerConsumer>();
 });
 
 builder.Services.AddDbContext<EfDbContext>();

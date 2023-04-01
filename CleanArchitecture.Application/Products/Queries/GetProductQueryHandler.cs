@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Application.Products.Queries;
 
-internal sealed class GetProductQueryHandler : IRequestHandler<GetProductQuery, Product>
+internal sealed class GetProductQueryHandler : IRequestHandler<GetProductQuery, Result<Product>>
 {
     //private readonly IDapperDbContext _dbContext;
 
@@ -20,11 +20,11 @@ internal sealed class GetProductQueryHandler : IRequestHandler<GetProductQuery, 
         _dataServiceFactory = dataServiceFactory;
     }
 
-    public Task<Product?> Handle(GetProductQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Product>> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {
         var dataService = _dataServiceFactory.CreateService<Product>();
         var product = dataService.GetFirstOfDefault(_ => _.Id == request.Id);
-        return Task.FromResult(product);
+        return new Result<Product>() {Value = product};
         //Product product = await _dbContext.QueryFirstOrDefaultAsync<Product>(
         //    @$"SELECT {nameof(Product.Id)}, {nameof(Product.Name)} 
         //            FROM Products

@@ -7,6 +7,7 @@ namespace CleanArchitecture.Infrastructure;
 public class EfDbContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
+    public DbSet<Customer> Customers { get; set; }
 
     public EfDbContext(DbContextOptions<EfDbContext> options) : base(options)
     {

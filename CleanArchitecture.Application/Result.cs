@@ -1,6 +1,7 @@
 ﻿namespace CleanArchitecture.Application;
 
-public class Result
+public class Result<T>
 {
-    public required bool IsSuccess { get; set; }
+    public bool IsSuccess => Value is not null;
+    public required T? Value { get; set; }
 }
