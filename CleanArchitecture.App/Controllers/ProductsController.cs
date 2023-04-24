@@ -1,43 +1,39 @@
+using CleanArchitecture.Application.Customers.Queries;
 using CleanArchitecture.Application.Products.Commands;
 using CleanArchitecture.Application.Products.Queries;
-using CleanArchitecture.Infrastructure.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitecture.App.Controllers
 {
-    [ApiController]
-    [Route("products")]
-    public class ProductsController : ControllerBase
+    public static class ProductsController
     {
-        private readonly ILogger<ProductsController> _logger;
-        private readonly ISender _mediator;
-
-        public ProductsController(IMediator mediator, ILogger<ProductsController> logger)
+        public static IEndpointRouteBuilder AddProductsMapEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            _mediator = mediator;
-            _logger = logger;
+            endpoints.MapGet("products", ProductsHandlers.GetProducts);
+            endpoints.MapPost("products", ProductsHandlers.AddProduct);
+            endpoints.MapGet("products/{id}", ProductsHandlers.GetProduct);
+            return endpoints;
+        }
+    }
+
+    public static class ProductsHandlers
+    {
+        public static async Task<IResult> GetProducts(IMediator mediator, CancellationToken cancellationToken)
+        {
+            var result = await mediator.Send(new GetProductsQuery(), cancellationToken);
+            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
         }
 
-        [HttpGet("")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(CancellationToken cancellationToken)
+        public static async Task<IResult> GetProduct(Guid id, IMediator mediator, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetProductsQuery(), cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound();
+            var result = await mediator.Send(new GetProductQuery(id), cancellationToken);
+            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(Guid id, CancellationToken cancellationToken)
+        public static async Task<IResult> AddProduct(CreateProductCommand product, IMediator mediator, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetProductQuery(id), cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound();
-        }
-
-        [HttpPost("")]
-        public async Task<ActionResult<bool>> AddProduct([FromBody] CreateProductCommand product, CancellationToken cancellationToken)
-        {
-            var result = await _mediator.Send(product, cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound();
+            var result = await mediator.Send(product, cancellationToken);
+            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
         }
     }
 }

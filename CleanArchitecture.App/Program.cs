@@ -1,5 +1,6 @@
 using Dapper;
 using System.Reflection;
+using CleanArchitecture.App.Controllers;
 using CleanArchitecture.Application.Customers.Commands;
 using CleanArchitecture.Application.Customers.Queries;
 using CleanArchitecture.Application.Products.Commands;
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure();
@@ -28,7 +30,6 @@ builder.Services.AddMediator(x =>
 });
 
 builder.Services.AddDbContext<EfDbContext>();
-
 builder.Services.AddTransient<DbContext, EfDbContext>();
 builder.Services.AddTransient<IDataServiceFactory, DataServiceFactory>();
 
@@ -37,6 +38,9 @@ SqlMapper.RemoveTypeMap(typeof(Guid));
 SqlMapper.RemoveTypeMap(typeof(Guid?));
 
 var app = builder.Build();
+
+app.AddCustomersMapEndpoints();
+app.AddProductsMapEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

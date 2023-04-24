@@ -1,45 +1,39 @@
-using CleanArchitecture.Application;
 using CleanArchitecture.Application.Customers.Commands;
 using CleanArchitecture.Application.Customers.Queries;
-using CleanArchitecture.Domain.DomainObjects;
 using MassTransit;
 using MassTransit.Mediator;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitecture.App.Controllers
 {
-    [ApiController]
-    [Route("customers")]
-    public class CustomersController : ControllerBase
+    public static class CustomersController
     {
-        private readonly ILogger<CustomersController> _logger;
-        private readonly IMediator _mediator;
-
-        public CustomersController(IMediator mediator, ILogger<CustomersController> logger)
+        public static IEndpointRouteBuilder AddCustomersMapEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            _mediator = mediator;
-            _logger = logger;
+            endpoints.MapGet("customers", CustomerHandlers.GetCustomers);
+            endpoints.MapPost("customers", CustomerHandlers.AddCustomer);
+            endpoints.MapGet("customers/{id}", CustomerHandlers.GetCustomer);
+            return endpoints;
+        }
+    }
+
+    public static class CustomerHandlers
+    {
+        public static async Task<IResult> GetCustomers(IMediator mediator, CancellationToken cancellationToken)
+        {
+            var result = await mediator.SendRequest(new GetCustomersQuery(), cancellationToken);
+            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
         }
 
-        [HttpGet("")]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers(CancellationToken cancellationToken)
+        public static async Task<IResult> GetCustomer(Guid id, IMediator mediator, CancellationToken cancellationToken)
         {
-            var result = await _mediator.SendRequest(new GetCustomersQuery(), cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound();
+            var result = await mediator.SendRequest(new GetCustomerQuery(id), cancellationToken);
+            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(Guid id, CancellationToken cancellationToken)
+        public static async Task<IResult> AddCustomer(CreateCustomerCommand customer, IMediator mediator, CancellationToken cancellationToken)
         {
-            var result = await _mediator.SendRequest(new GetCustomerQuery(id), cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound();
-        }
-
-        [HttpPost("")]
-        public async Task<ActionResult<bool>> AddCustomer([FromBody] CreateCustomerCommand customer, CancellationToken cancellationToken)
-        {
-            var result = await _mediator.SendRequest(customer, cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound();
+            var result = await mediator.SendRequest(customer, cancellationToken);
+            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
         }
     }
 }
