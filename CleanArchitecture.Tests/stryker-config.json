@@ -1,0 +1,18 @@
+﻿{
+	"stryker-config": {
+	"reporters": [
+		"cleartext",
+		"progress",
+		"html"
+	],
+	"log-level": "info",
+	"timeout-ms": 100000,
+	"log-file": true,
+	"project-file": "RzeszowBusCore.csproj",
+	"max-concurrent-test-runners": 4,
+	"threshold-high": 80,
+	"threshold-low": 60,
+	"threshold-break": 10,
+	"files-to-exclude": []
+	}
+}
