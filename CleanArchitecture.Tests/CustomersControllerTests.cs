@@ -5,20 +5,9 @@ using System.Text.Json;
 using CleanArchitecture.Domain.DomainObjects;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using CleanArchitecture.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
-using System.Collections.Generic;
-using System.Collections;
 using CleanArchitecture.Domain.Persistence;
-using System.Linq;
-using System;
 using CleanArchitecture.Tests.Fakes;
-using static System.Net.Mime.MediaTypeNames;
-using FluentAssertions.Common;
 
 namespace CleanArchitecture.Tests
 {
