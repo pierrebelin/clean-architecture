@@ -1,5 +1,6 @@
 using Dapper;
 using System.Reflection;
+using CleanArchitecture.Application.Configuration;
 using CleanArchitecture.Application.HealthChecks;
 using CleanArchitecture.Application.UseCases.Customers;
 using CleanArchitecture.Domain.Persistence;
@@ -11,6 +12,7 @@ using CleanArchitecture.Application.UseCases.Products.Queries;
 using CleanArchitecture.Application.UseCases.Customers.Commands;
 using CleanArchitecture.Application.UseCases.Customers.Queries;
 using CleanArchitecture.Infrastructure.Persistence;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +33,14 @@ builder.Services.AddMediator(x =>
     x.AddConsumersFromNamespaceContaining<CreateCustomerConsumer>();
 });
 
-builder.Services.AddDbContext<EfDbContext>();
+
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>();
+builder.Services.AddDbContext<EfDbContext>(options => options.UseSqlite(dbSettings.ConnectionString));
 builder.Services.AddTransient<DbContext, EfDbContext>();
 builder.Services.AddTransient<IDataServiceFactory, DataServiceFactory>();
 
@@ -66,3 +75,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
+

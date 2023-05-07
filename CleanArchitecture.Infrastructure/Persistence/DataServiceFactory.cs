@@ -18,8 +18,8 @@ public class DataServiceFactory : IDataServiceFactory
 
     private readonly Dictionary<Type, Type> _mappingDomainObjectsToDto = new()
     {
-        {typeof(Product), typeof(Entities.Product)},
-        {typeof(Customer), typeof(Entities.Customer)}
+        {typeof(Domain.DomainObjects.Product), typeof(Entities.Product)},
+        {typeof(Domain.DomainObjects.Customer), typeof(Entities.Customer)}
     };
 
     public IDataService<T>? CreateService<T>() where T : class
