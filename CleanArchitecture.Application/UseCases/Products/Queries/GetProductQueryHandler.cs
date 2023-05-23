@@ -1,37 +1,27 @@
 ﻿using CleanArchitecture.Application.Mediator;
-using CleanArchitecture.Domain.DomainObjects;
+using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Application.UseCases.Products.Queries;
 
-internal sealed class GetProductQueryHandler : IRequestHandler<GetProductQuery, Result<Product>>
+internal sealed class GetProductQueryHandler : IRequestHandler<GetProductQuery, Result<Product, NotFound>>
 {
-    //private readonly IDapperDbContext _dbContext;
+    private readonly IUnitOfWork _unitOfWork;
 
-    //public GetProductQueryHandler(IDapperDbContext dbContext)
-    //{
-    //    _dbContext = dbContext;
-    //}
-
-    private readonly IDataServiceFactory _dataServiceFactory;
-    public GetProductQueryHandler(IDataServiceFactory dataServiceFactory)
+    public GetProductQueryHandler(IUnitOfWork unitOfWork)
     {
-        _dataServiceFactory = dataServiceFactory;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<Product>> Handle(GetProductQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Product, NotFound>> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {
-        var dataService = _dataServiceFactory.CreateService<Product>();
-        var product = dataService.GetFirstOfDefault(_ => _.Id == request.Id);
-        return new Result<Product>() { Value = product };
-        //Product product = await _dbContext.QueryFirstOrDefaultAsync<Product>(
-        //    @$"SELECT {nameof(Product.Id)}, {nameof(Product.Name)} 
-        //            FROM Products
-        //            WHERE {nameof(Product.Id)} = @Id",
-        //        new { Id = request.Id.ToString().ToUpper() });
-        //return product;
+        var product = await _unitOfWork.ProductRepository.GetByIdAsync(request.Id);
+        if (product == null)
+        {
+            return new NotFound();
+        }
+        return product;
     }
 }
 

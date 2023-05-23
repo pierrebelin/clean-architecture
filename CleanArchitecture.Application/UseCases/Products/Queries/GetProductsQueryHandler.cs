@@ -1,25 +1,27 @@
 ﻿using CleanArchitecture.Application.Mediator;
-using CleanArchitecture.Domain.DomainObjects;
+using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Application.UseCases.Products.Queries;
 
-internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, Result<IEnumerable<Product>>>
+internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, Result<IEnumerable<Product>, NotFound>>
 {
-    private readonly IDataServiceFactory _dataServiceFactory;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetProductsQueryHandler(IDataServiceFactory dataServiceFactory)
+    public GetProductsQueryHandler(IUnitOfWork unitOfWork)
     {
-        _dataServiceFactory = dataServiceFactory;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<IEnumerable<Product>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Product>, NotFound>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        var dataService = _dataServiceFactory.CreateService<Product>();
-        var products = await dataService.GetAllAsync();
-        return new Result<IEnumerable<Product>>() { Value = products };
+        var customers = await _unitOfWork.ProductRepository.GetAllAsync();
+        if (!customers.Any())
+        {
+            return new NotFound();
+        }
+        return customers;
     }
 }
 

@@ -30,8 +30,4 @@
     <ProjectReference Include="..\CleanArchitecture.Application\CleanArchitecture.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Fakes\" />
-  </ItemGroup>
-
 </Project>

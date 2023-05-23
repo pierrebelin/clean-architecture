@@ -1,30 +1,30 @@
 ﻿using CleanArchitecture.Application.Mediator;
-using CleanArchitecture.Domain.DomainObjects;
+using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using static MassTransit.ValidationResultExtensions;
 
 namespace CleanArchitecture.Application.UseCases.Products.Commands;
 
-internal sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<bool>>
+internal sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<bool, ValidationFailed>>
 {
-    private readonly IDataServiceFactory _dataServiceFactory;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CreateProductCommandHandler(IDataServiceFactory dataServiceFactory)
+    public CreateProductCommandHandler(IUnitOfWork unitOfWork)
     {
-        _dataServiceFactory = dataServiceFactory;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<bool>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool, ValidationFailed>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
         var product = new Product() { Name = request.Name };
 
-        IDataService<Product> dataService = _dataServiceFactory.CreateService<Product>();
-        dataService.Add(product);
-
-        var result = await _dataServiceFactory.SaveChangesAsync(cancellationToken);
-        return new Result<bool>() { Value = result > 0 };
+        _unitOfWork.ProductRepository.Add(product);
+        var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        if (result == 0)
+        {
+            return new ValidationFailed();
+        }
+        return true;
     }
 }
 

@@ -20,19 +20,25 @@ namespace CleanArchitecture.Application.UseCases.Products
         public static async Task<IResult> GetProducts(IMediator mediator, CancellationToken cancellationToken)
         {
             var result = await mediator.Send(new GetProductsQuery(), cancellationToken);
-            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
+            return result.Match<IResult>(
+                m => Results.Ok(m),
+                failed => Results.NotFound());
         }
 
         public static async Task<IResult> GetProduct(Guid id, IMediator mediator, CancellationToken cancellationToken)
         {
             var result = await mediator.Send(new GetProductQuery(id), cancellationToken);
-            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
+            return result.Match<IResult>(
+                m => Results.Ok(m),
+                failed => Results.NotFound());
         }
 
         public static async Task<IResult> AddProduct(CreateProductCommand product, IMediator mediator, CancellationToken cancellationToken)
         {
             var result = await mediator.Send(product, cancellationToken);
-            return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound();
+            return result.Match<IResult>(
+                m => Results.Ok(m),
+                failed => Results.NotFound());
         }
     }
 }

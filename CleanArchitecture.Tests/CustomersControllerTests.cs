@@ -2,11 +2,12 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Text.Json;
-using CleanArchitecture.Domain.DomainObjects;
+using CleanArchitecture.Domain.Entities;
+using CleanArchitecture.Domain.Persistence;
+using CleanArchitecture.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using CleanArchitecture.Domain.Persistence;
 using CleanArchitecture.Tests.Fakes;
 
 namespace CleanArchitecture.Tests
@@ -49,18 +50,19 @@ namespace CleanArchitecture.Tests
         {
             _ = builder.ConfigureTestServices(services =>
             {
-                var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IDataServiceFactory));
+                var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IUnitOfWork));
                 services.Remove(serviceDescriptor);
-                services.AddSingleton<IDataServiceFactory, DataServiceFactoryFake>();
+                services.AddSingleton<IUnitOfWork, UnitOfWorkFake>();
+                services.AddTransient<IProductRepository, ProductRepositoryFake>();
+                services.AddTransient<ICustomerRepository, CustomerRepositoryFake>();
             });
         }
 
         public void InitData()
         {
-            var dataServiceFactory = Services.GetService<IDataServiceFactory>();
-            var dataService = dataServiceFactory.CreateService<Customer>();
-            dataService.Add(new Customer { Id = Guid.Parse("6709c6ff-b1e6-4c2e-a3dd-b1938623d148"), Name = "Titouan" });
-            dataService.Add(new Customer { Id = Guid.Parse("6709c6ff-b1e6-4c2e-a3dd-b1938623d149"), Name = "Michel" });
+            var unitOfWork = Services.GetService<IUnitOfWork>();
+            unitOfWork.CustomerRepository.Add(new Customer { Id = Guid.Parse("6709c6ff-b1e6-4c2e-a3dd-b1938623d148"), Name = "Titouan" });
+            unitOfWork.CustomerRepository.Add(new Customer { Id = Guid.Parse("6709c6ff-b1e6-4c2e-a3dd-b1938623d149"), Name = "Michel" });
         }
     }
 }

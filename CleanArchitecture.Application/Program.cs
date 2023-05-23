@@ -3,7 +3,6 @@ using System.Reflection;
 using CleanArchitecture.Application.Configuration;
 using CleanArchitecture.Application.HealthChecks;
 using CleanArchitecture.Application.UseCases.Customers;
-using CleanArchitecture.Domain.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -11,8 +10,9 @@ using CleanArchitecture.Application.UseCases.Products;
 using CleanArchitecture.Application.UseCases.Products.Queries;
 using CleanArchitecture.Application.UseCases.Customers.Commands;
 using CleanArchitecture.Application.UseCases.Customers.Queries;
+using CleanArchitecture.Domain.Persistence;
 using CleanArchitecture.Infrastructure.Persistence;
-using Microsoft.Extensions.Configuration;
+using CleanArchitecture.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,15 +22,15 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddInfrastructure();
+//builder.Services.AddInfrastructure();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(GetProductsQuery).GetTypeInfo().Assembly);
 });
 builder.Services.AddMediator(x =>
 {
-    x.AddConsumersFromNamespaceContaining<GetCustomersConsumer>();
-    x.AddConsumersFromNamespaceContaining<CreateCustomerConsumer>();
+    x.AddConsumersFromNamespaceContaining<GetCustomersQueryHandler>();
+    x.AddConsumersFromNamespaceContaining<CreateCustomerCommandHandler>();
 });
 
 
@@ -42,7 +42,10 @@ var configuration = new ConfigurationBuilder()
 var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>();
 builder.Services.AddDbContext<EfDbContext>(options => options.UseSqlite(dbSettings.ConnectionString));
 builder.Services.AddTransient<DbContext, EfDbContext>();
-builder.Services.AddTransient<IDataServiceFactory, DataServiceFactory>();
+
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
+builder.Services.AddTransient<IProductRepository, ProductRepository>();
 
 builder.Services.AddHealthChecks()
     .AddCheck<PersistenceHealthCheck>(nameof(PersistenceHealthCheck));

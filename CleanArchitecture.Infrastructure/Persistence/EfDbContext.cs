@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using CleanArchitecture.Infrastructure.Persistence.Entities;
+﻿using CleanArchitecture.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Infrastructure.Persistence;
