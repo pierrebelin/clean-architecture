@@ -13,19 +13,19 @@ using CleanArchitecture.Tests.Fakes;
 using CleanArchitecture.Application.Core.Customers.Commands;
 using System;
 using CleanArchitecture.Application.Core.Customers.DTO;
+using FluentAssertions.Common;
 
 namespace CleanArchitecture.Tests
 {
-    public class CustomersControllerTests : IClassFixture<ApiWebApplicationFactory>
+    public class CustomersControllerTests : IClassFixture<ApiWebApplicationFactory<UnitOfWorkFakeCustomerControllerLoader>>
     {
         private readonly HttpClient _client;
         private readonly IServiceProvider _serviceProvider;
 
-        public CustomersControllerTests(ApiWebApplicationFactory application)
+        public CustomersControllerTests(ApiWebApplicationFactory<UnitOfWorkFakeCustomerControllerLoader> application)
         {
             _client = application.CreateClient();
             _serviceProvider = application.Services;
-            application.InitData();
         }
 
         [Theory]
@@ -104,7 +104,7 @@ namespace CleanArchitecture.Tests
         }
     }
 
-    public class ApiWebApplicationFactory : WebApplicationFactory<Program>
+    public class ApiWebApplicationFactory<T> : WebApplicationFactory<Program> where T : class, IUnitOfWorkFakeLoader
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -115,14 +115,22 @@ namespace CleanArchitecture.Tests
                 services.AddSingleton<IUnitOfWork, UnitOfWorkFake>();
                 services.AddTransient<IProductRepository, ProductRepositoryFake>();
                 services.AddTransient<ICustomerRepository, CustomerRepositoryFake>();
+                services.AddTransient<IUnitOfWorkFakeLoader, T>();
             });
         }
+    }
 
-        public void InitData()
+    public class UnitOfWorkFakeCustomerControllerLoader : IUnitOfWorkFakeLoader
+    {
+        public void LoadInto(UnitOfWorkFake unitOfWork)
         {
-            var unitOfWork = Services.GetService<IUnitOfWork>();
             unitOfWork.CustomerRepository.Add(new Customer { Id = Guid.Parse("6709c6ff-b1e6-4c2e-a3dd-b1938623d148"), Name = "Titouan" });
             unitOfWork.CustomerRepository.Add(new Customer { Id = Guid.Parse("6709c6ff-b1e6-4c2e-a3dd-b1938623d149"), Name = "Michel" });
         }
+    }
+
+    public interface IUnitOfWorkFakeLoader
+    {
+        void LoadInto(UnitOfWorkFake unitOfWork);
     }
 }
