@@ -19,6 +19,16 @@ public class CustomerRepository : ICustomerRepository
         return _dbContext.Customers.FirstOrDefaultAsync(_ => _.Id == id);
     }
 
+    public void Update(Customer customer)
+    {
+        _dbContext.Customers.Update(customer);
+    }
+
+    public void Remove(Customer customerToDelete)
+    {
+        _dbContext.Customers.Remove(customerToDelete);
+    }
+
     public Task<List<Customer>> GetAllAsync()
     {
         return _dbContext.Customers.ToListAsync();

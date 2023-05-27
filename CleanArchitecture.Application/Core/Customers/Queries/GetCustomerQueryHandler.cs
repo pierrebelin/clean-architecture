@@ -3,7 +3,7 @@ using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MassTransit.Mediator;
 
-namespace CleanArchitecture.Application.UseCases.Customers.Queries;
+namespace CleanArchitecture.Application.Core.Customers.Queries;
 
 public sealed class GetCustomerQueryHandler : MediatorRequestHandler<GetCustomerQuery, Result<Customer, NotFound>>
 {

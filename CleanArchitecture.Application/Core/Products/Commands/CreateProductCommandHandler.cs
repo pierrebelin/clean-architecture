@@ -3,7 +3,7 @@ using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MediatR;
 
-namespace CleanArchitecture.Application.UseCases.Products.Commands;
+namespace CleanArchitecture.Application.Core.Products.Commands;
 
 internal sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<bool, ValidationFailed>>
 {

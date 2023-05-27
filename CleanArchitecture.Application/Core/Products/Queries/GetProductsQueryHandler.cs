@@ -3,7 +3,7 @@ using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MediatR;
 
-namespace CleanArchitecture.Application.UseCases.Products.Queries;
+namespace CleanArchitecture.Application.Core.Products.Queries;
 
 internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, Result<IEnumerable<Product>, NotFound>>
 {

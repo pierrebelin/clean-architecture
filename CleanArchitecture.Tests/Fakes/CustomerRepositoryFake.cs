@@ -18,6 +18,11 @@ namespace CleanArchitecture.Tests.Fakes
             _customers.Add(customerToAdd);
         }
 
+        public void Remove(Customer customerToDelete)
+        {
+            _customers.Remove(customerToDelete);
+        }
+
         public Task<List<Customer>> GetAllAsync()
         {
             return Task.Run(() => _customers);
@@ -26,6 +31,13 @@ namespace CleanArchitecture.Tests.Fakes
         public Task<Customer?> GetByIdAsync(Guid id)
         {
             return Task.Run(() => _customers.FirstOrDefault(_ => _.Id == id));
+        }
+
+        public void Update(Customer customer)
+        {
+            var oldCustomer = _customers.FirstOrDefault(_ => _.Id == customer.Id);
+            _customers.Remove(oldCustomer);
+            _customers.Add(customer);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿@CleanArchitecture.Application_HostAddress = https://localhost:7109
+﻿# https://devblogs.microsoft.com/visualstudio/web-api-development-in-visual-studio-2022/
+
+@CleanArchitecture.Application_HostAddress = https://localhost:7109
 
 Get {{CleanArchitecture.Application_HostAddress}}/customers
 
@@ -8,3 +10,16 @@ Get {{CleanArchitecture.Application_HostAddress}}/customers
 Get {{CleanArchitecture.Application_HostAddress}}/customers/{{Customer_Id}}
 
 ###
+
+@Customer_Id = 2c6a940d-3f6c-418e-8cdb-cae24163baef
+Delete {{CleanArchitecture.Application_HostAddress}}/customers/{{Customer_Id}}
+
+###
+
+@Customer_Id = 2c6a940d-3f6c-418e-8cdb-cae24163baef
+Put {{CleanArchitecture.Application_HostAddress}}/customers/{{Customer_Id}}
+Content-Type: application/json
+
+{
+  "name": "Jean"
+}

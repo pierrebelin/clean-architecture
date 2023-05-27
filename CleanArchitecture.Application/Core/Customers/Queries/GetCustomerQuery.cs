@@ -2,6 +2,6 @@
 using CleanArchitecture.Domain.Entities;
 using MassTransit.Mediator;
 
-namespace CleanArchitecture.Application.UseCases.Customers.Queries;
+namespace CleanArchitecture.Application.Core.Customers.Queries;
 
 public record GetCustomerQuery(Guid Id) : Request<Result<Customer, NotFound>>;

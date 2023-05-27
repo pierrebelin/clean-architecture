@@ -1,7 +1,7 @@
 ﻿using CleanArchitecture.Application.Mediator;
 using MediatR;
 
-namespace CleanArchitecture.Application.UseCases.Products.Commands;
+namespace CleanArchitecture.Application.Core.Products.Commands;
 
 public record CreateProductCommand(string Name) : IRequest<Result<bool, ValidationFailed>>;
 

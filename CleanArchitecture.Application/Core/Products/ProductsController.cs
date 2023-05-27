@@ -1,8 +1,8 @@
-using CleanArchitecture.Application.UseCases.Products.Commands;
-using CleanArchitecture.Application.UseCases.Products.Queries;
+using CleanArchitecture.Application.Core.Products.Commands;
+using CleanArchitecture.Application.Core.Products.Queries;
 using MediatR;
 
-namespace CleanArchitecture.Application.UseCases.Products
+namespace CleanArchitecture.Application.Core.Products
 {
     public static class ProductsController
     {

@@ -3,7 +3,7 @@ using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MassTransit.Mediator;
 
-namespace CleanArchitecture.Application.UseCases.Customers.Commands;
+namespace CleanArchitecture.Application.Core.Customers.Commands;
 
 public sealed class CreateCustomerCommandHandler : MediatorRequestHandler<CreateCustomerCommand, Result<bool, ValidationFailed>>
 {
