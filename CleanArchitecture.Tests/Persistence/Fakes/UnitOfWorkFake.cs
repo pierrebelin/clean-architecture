@@ -2,7 +2,7 @@
 using CleanArchitecture.Tests;
 using Microsoft.EntityFrameworkCore;
 
-namespace CleanArchitecture.Infrastructure.Persistence;
+namespace CleanArchitecture.Tests.Persistence.Fakes;
 
 public class UnitOfWorkFake : IUnitOfWork
 {

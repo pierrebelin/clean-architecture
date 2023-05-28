@@ -7,7 +7,7 @@ using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace CleanArchitecture.Tests.Fakes
+namespace CleanArchitecture.Tests.Persistence.Fakes
 {
     internal class ProductRepositoryFake : IProductRepository
     {
