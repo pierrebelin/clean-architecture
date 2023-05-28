@@ -1,5 +1,4 @@
 ﻿using CleanArchitecture.Application.Mediator;
-using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using MassTransit.Mediator;
 

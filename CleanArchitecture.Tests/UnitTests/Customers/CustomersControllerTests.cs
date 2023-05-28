@@ -1,24 +1,15 @@
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using CleanArchitecture.Application.Core.Customers.Commands;
+using CleanArchitecture.Application.Core.Customers.DTO;
 using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using CleanArchitecture.Application.Core.Customers.Commands;
-using System;
-using System.Collections;
-using CleanArchitecture.Application.Core.Customers.DTO;
-using FluentAssertions.Common;
-using System.Threading.Channels;
-using CleanArchitecture.Tests.Persistence.Fakes;
-using CleanArchitecture.Tests.Integrations.Customers.Data;
 using CleanArchitecture.Tests.Persistence.Data;
+using CleanArchitecture.Tests.UnitTests.Customers.Data;
+using FluentAssertions;
 
-namespace CleanArchitecture.Tests.Integrations.Customers
+namespace CleanArchitecture.Tests.UnitTests.Customers
 {
     public class CustomersControllerTests
     {

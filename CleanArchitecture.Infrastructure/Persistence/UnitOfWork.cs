@@ -1,5 +1,4 @@
 ﻿using CleanArchitecture.Domain.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Infrastructure.Persistence;
 

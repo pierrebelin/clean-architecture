@@ -1,7 +1,4 @@
-﻿using CleanArchitecture.Domain.Entities;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace CleanArchitecture.Infrastructure.Persistence;
+﻿namespace CleanArchitecture.Infrastructure.Persistence;
 
 //public static class DependencyInjection
 //{

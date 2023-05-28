@@ -1,7 +1,6 @@
 ﻿using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CleanArchitecture.Infrastructure.Persistence.Repositories;
 

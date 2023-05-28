@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CleanArchitecture.Tests.Integrations.Customers.Data;
+namespace CleanArchitecture.Tests.UnitTests.Customers.Data;
 
 public class CustomersControllerTestData<T> : WebApplicationFactory<Program>, IEnumerable<object[]> where T : class, IUnitOfWorkFakeLoader
 {

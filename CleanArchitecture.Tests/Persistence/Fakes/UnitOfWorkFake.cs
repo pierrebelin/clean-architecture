@@ -1,6 +1,4 @@
 ﻿using CleanArchitecture.Domain.Persistence;
-using CleanArchitecture.Tests;
-using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Tests.Persistence.Fakes;
 

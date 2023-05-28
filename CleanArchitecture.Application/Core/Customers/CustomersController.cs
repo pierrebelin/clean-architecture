@@ -3,8 +3,6 @@ using CleanArchitecture.Application.Core.Customers.DTO;
 using CleanArchitecture.Application.Core.Customers.Queries;
 using MassTransit;
 using MassTransit.Mediator;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitecture.Application.Core.Customers
 {
