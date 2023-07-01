@@ -18,13 +18,10 @@ namespace CleanArchitecture.Application.Mediator
         public async Task Send(ConsumeContext<T> context, IPipe<ConsumeContext<T>> next)
         {
             _timer.Start();
-
             await next.Send(context);
-
             _timer.Stop();
 
             var elapsedMilliseconds = _timer.ElapsedMilliseconds;
-
             if (elapsedMilliseconds > 500)
             {
                 _logger.LogWarning($"CleanArchitecture Long Running Request: {typeof(T).Name} ({elapsedMilliseconds} milliseconds)");
@@ -33,7 +30,7 @@ namespace CleanArchitecture.Application.Mediator
 
         public void Probe(ProbeContext context)
         {
-            throw new NotImplementedException();
+            context.CreateFilterScope("performance");
         }
     }
 }

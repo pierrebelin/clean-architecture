@@ -7,6 +7,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using CleanArchitecture.Application.Core.Products;
 using CleanArchitecture.Application.Core.Products.Queries;
+using CleanArchitecture.Application.Mediator;
 using CleanArchitecture.Domain.Persistence;
 using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Persistence.Repositories;
@@ -15,9 +16,7 @@ using HealthChecks.UI.Client;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddInfrastructure();
@@ -25,6 +24,21 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(GetProductsQuery).GetTypeInfo().Assembly);
 });
+
+//builder.Services.AddMassTransit(_ =>
+//{
+//    _.AddConsumers(typeof(Program).Assembly);
+//    _.AddConsumers(typeof(Program).Assembly);
+//    _.UsingInMemory((context, cfg) =>
+//    {
+//        //cfg.UseSendFilter(typeof(TokenSendFilter<>), context);
+//        //cfg.UsePublishFilter(typeof(TokenPublishFilter<>), context);
+//        cfg.UseConsumeFilter(typeof(PerformanceBehaviour<>), context);
+
+//        //cfg.ConfigureEndpoints(context);
+//    });
+//});
+
 builder.Services.AddMediator(x =>
 {
     x.AddConsumers(typeof(Program).Assembly);

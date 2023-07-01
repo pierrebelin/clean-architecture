@@ -1,6 +1,8 @@
 using CleanArchitecture.Application.Core.Customers.Commands;
 using CleanArchitecture.Application.Core.Customers.DTO;
 using CleanArchitecture.Application.Core.Customers.Queries;
+using CleanArchitecture.Application.Mediator;
+using CleanArchitecture.Domain.Entities;
 using MassTransit;
 using MassTransit.Mediator;
 
@@ -21,46 +23,46 @@ namespace CleanArchitecture.Application.Core.Customers
 
     public static class CustomerHandlers
     {
-        public static async Task<IResult> GetCustomers(IMediator mediator, CancellationToken cancellationToken)
+        public static async Task<IResult> GetCustomers(IRequestClient<GetCustomersQuery> client, CancellationToken cancellationToken)
         {
-            var result = await mediator.SendRequest(new GetCustomersQuery(), cancellationToken);
-            return result.Match<IResult>(
-                m => Results.Ok(m),
-                failed => Results.NotFound());
+            var response = await client.GetResponse<Result<IEnumerable<Customer>, NotFound>>(new GetCustomersQuery(), cancellationToken);
+            return response.Message.Match(
+                Results.Ok,
+                Results.NotFound);
         }
 
-        public static async Task<IResult> GetCustomer(Guid id, IMediator mediator, CancellationToken cancellationToken)
+        public static async Task<IResult> GetCustomer(Guid id, IRequestClient<GetCustomerQuery> client, CancellationToken cancellationToken)
         {
-            var result = await mediator.SendRequest(new GetCustomerQuery(id), cancellationToken);
-            return result.Match<IResult>(
-                m => Results.Ok(m),
-                failed => Results.NotFound());
+            var response = await client.GetResponse<Result<Customer, NotFound>>(new GetCustomerQuery(id), cancellationToken);
+            return response.Message.Match(
+                Results.Ok,
+                Results.NotFound);
+
         }
 
-        public static async Task<IResult> AddCustomer(CreateCustomerCommand customer, IMediator mediator, CancellationToken cancellationToken)
+        public static async Task<IResult> AddCustomer(CreateCustomerCommand customer, IRequestClient<CreateCustomerCommand> client, CancellationToken cancellationToken)
         {
-            var result = await mediator.SendRequest(customer, cancellationToken);
-            return result.Match<IResult>(
+            var response = await client.GetResponse<Result<bool, ValidationFailed>>(customer, cancellationToken);
+            return response.Message.Match(
                 m => Results.NoContent(),
-                failed => Results.BadRequest());
+                Results.BadRequest);
         }
 
-        public static async Task<IResult> DeleteCustomer(Guid id, IMediator mediator, CancellationToken cancellationToken)
+        public static async Task<IResult> DeleteCustomer(Guid id, IRequestClient<DeleteCustomerCommand> client, CancellationToken cancellationToken)
         {
-            var result = await mediator.SendRequest(new DeleteCustomerCommand(id), cancellationToken);
-            return result.Match<IResult>(
+            var response = await client.GetResponse<Result<bool, IDbResult>>(new DeleteCustomerCommand(id), cancellationToken);
+            return response.Message.Match(
                 m => Results.NoContent(),
-                failed => Results.NotFound());
+                Results.BadRequest);
         }
 
-        public static async Task<IResult> UpdateCustomer(Guid id, UpdateCustomerRequest customer, IMediator mediator, CancellationToken cancellationToken)
-
+        public static async Task<IResult> UpdateCustomer(Guid id, UpdateCustomerRequest customer, IRequestClient<UpdateCustomerCommand> client, CancellationToken cancellationToken)
         {
             UpdateCustomerCommand command = new(id, customer.Name);
-            var result = await mediator.SendRequest(command, cancellationToken);
-            return result.Match<IResult>(
+            var response = await client.GetResponse<Result<bool, IDbResult>>(command, cancellationToken);
+            return response.Message.Match(
                 m => Results.NoContent(),
-                failed => Results.NotFound());
+                Results.NotFound);
         }
     }
 }

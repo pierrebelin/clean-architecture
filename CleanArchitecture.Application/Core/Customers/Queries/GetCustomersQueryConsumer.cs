@@ -1,28 +1,26 @@
 ﻿using CleanArchitecture.Application.Mediator;
 using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
-using MassTransit.Mediator;
+using MassTransit;
 
 namespace CleanArchitecture.Application.Core.Customers.Queries;
 
-public sealed class GetCustomersQueryHandler : MediatorRequestHandler<GetCustomersQuery, Result<IEnumerable<Customer>, NotFound>>
+public sealed class GetCustomersQueryConsumer : IConsumer<GetCustomersQuery>
 {
     private readonly ICustomerRepository _customerRepository;
 
-    public GetCustomersQueryHandler(ICustomerRepository customerRepository)
+    public GetCustomersQueryConsumer(ICustomerRepository customerRepository)
     {
         _customerRepository = customerRepository;
     }
 
-    protected override async Task<Result<IEnumerable<Customer>, NotFound>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
+    public async Task Consume(ConsumeContext<GetCustomersQuery> context)
     {
         var customers = await _customerRepository.GetAllAsync();
         if (!customers.Any())
         {
-            return new NotFound();
+            await context.RespondAsync<Result<IEnumerable<Customer>, NotFound>>(new NotFound());
         }
-        return customers;
+        await context.RespondAsync<Result<IEnumerable<Customer>, NotFound>>(customers);
     }
 }
-
-
