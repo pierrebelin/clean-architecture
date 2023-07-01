@@ -2,7 +2,8 @@
 
 namespace CleanArchitecture.Tests.Persistence;
 
-public interface IUnitOfWorkFakeLoader
+internal interface IUnitOfWorkFakeLoader
 {
-    void LoadInto(UnitOfWorkFake unitOfWork);
+    bool IsLoaded { get; }
+    void LoadInto(UnitOfWorkFake unitOfWork, IServiceProvider serviceProvider);
 }

@@ -6,6 +6,15 @@ Get {{CleanArchitecture.Application_HostAddress}}/customers
 
 ###
 
+Post {{CleanArchitecture.Application_HostAddress}}/customers
+Content-Type: application/json
+
+{
+  "name": "Dan"
+}
+
+###
+
 @Customer_Id = f1ec6be7-2079-4804-9e8d-0db9b30465ac
 Get {{CleanArchitecture.Application_HostAddress}}/customers/{{Customer_Id}}
 
@@ -21,5 +30,5 @@ Put {{CleanArchitecture.Application_HostAddress}}/customers/{{Customer_Id}}
 Content-Type: application/json
 
 {
-  "name": "Jean"
+  "name": "Andrew"
 }

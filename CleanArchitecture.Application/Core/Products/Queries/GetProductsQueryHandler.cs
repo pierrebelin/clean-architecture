@@ -7,16 +7,16 @@ namespace CleanArchitecture.Application.Core.Products.Queries;
 
 internal sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, Result<IEnumerable<Product>, NotFound>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IProductRepository _productRepository;
 
-    public GetProductsQueryHandler(IUnitOfWork unitOfWork)
+    public GetProductsQueryHandler(IProductRepository productRepository)
     {
-        _unitOfWork = unitOfWork;
+        _productRepository = productRepository;
     }
 
     public async Task<Result<IEnumerable<Product>, NotFound>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        var customers = await _unitOfWork.ProductRepository.GetAllAsync();
+        var customers = await _productRepository.GetAllAsync();
         if (!customers.Any())
         {
             return new NotFound();

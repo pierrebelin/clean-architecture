@@ -1,18 +1,16 @@
 using Dapper;
 using System.Reflection;
 using CleanArchitecture.Application.Configuration;
-using CleanArchitecture.Application.Core.Customers.Commands;
-using CleanArchitecture.Application.HealthChecks;
 using CleanArchitecture.Application.Core.Customers;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using CleanArchitecture.Application.Core.Products;
 using CleanArchitecture.Application.Core.Products.Queries;
-using CleanArchitecture.Application.Core.Customers.Queries;
 using CleanArchitecture.Domain.Persistence;
 using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Persistence.Repositories;
+using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,8 +27,7 @@ builder.Services.AddMediatR(cfg =>
 });
 builder.Services.AddMediator(x =>
 {
-    x.AddConsumersFromNamespaceContaining<GetCustomersQueryHandler>();
-    x.AddConsumersFromNamespaceContaining<CreateCustomerCommandHandler>();
+    x.AddConsumers(typeof(Program).Assembly);
 });
 
 
@@ -40,9 +37,13 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>();
-builder.Services.AddDbContext<EfDbContext>(options => options.UseSqlite(dbSettings.ConnectionString));
-builder.Services.AddTransient<DbContext, EfDbContext>();
 
+if (dbSettings == null)
+{
+    throw new Exception("There is no db settings");
+}
+
+builder.Services.AddDbContext<EfDbContext>(options => options.UseSqlite(dbSettings.ConnectionString));
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
@@ -68,7 +69,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
-    ResponseWriter = HealthCheckExtensions.WriteHealthCheckResponse
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
 app.UseHttpsRedirection();

@@ -1,6 +1,8 @@
-﻿namespace CleanArchitecture.Domain.Entities;
+﻿using CleanArchitecture.Domain.Persistence;
 
-public class Customer
+namespace CleanArchitecture.Domain.Entities;
+
+public class Customer : IEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

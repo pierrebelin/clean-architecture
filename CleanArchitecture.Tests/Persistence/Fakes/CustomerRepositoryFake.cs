@@ -1,37 +1,43 @@
 ﻿using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Persistence;
+using CleanArchitecture.Tests.Persistence.Fakes.Database;
+using System.Security.Cryptography;
+using static Dapper.SqlMapper;
 
 namespace CleanArchitecture.Tests.Persistence.Fakes
 {
     internal class CustomerRepositoryFake : ICustomerRepository
     {
-        private readonly List<Customer> _customers = new();
+        private readonly IDbFake _db;
+
+        public CustomerRepositoryFake(IDbFake db)
+        {
+            _db = db;
+        }
 
         public void Add(Customer customerToAdd)
         {
-            _customers.Add(customerToAdd);
+            _db.Add(customerToAdd);
         }
 
         public void Remove(Customer customerToDelete)
         {
-            _customers.Remove(customerToDelete);
+            _db.Remove(customerToDelete);
         }
 
         public Task<List<Customer>> GetAllAsync()
         {
-            return Task.Run(() => _customers);
+            return Task.FromResult(_db.Customers.Select(_ => _.Element).ToList());
         }
 
         public Task<Customer?> GetByIdAsync(Guid id)
         {
-            return Task.Run(() => _customers.FirstOrDefault(_ => _.Id == id));
+            return Task.FromResult(_db.Customers.Select(_ => _.Element).FirstOrDefault(_ => _.Id == id));
         }
 
         public void Update(Customer customer)
         {
-            var oldCustomer = _customers.FirstOrDefault(_ => _.Id == customer.Id);
-            _customers.Remove(oldCustomer);
-            _customers.Add(customer);
+            _db.Update(customer);
         }
     }
 }

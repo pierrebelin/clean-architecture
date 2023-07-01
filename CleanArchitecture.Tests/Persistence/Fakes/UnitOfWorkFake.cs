@@ -1,23 +1,23 @@
 ﻿using CleanArchitecture.Domain.Persistence;
+using CleanArchitecture.Tests.Persistence.Fakes.Database;
 
 namespace CleanArchitecture.Tests.Persistence.Fakes;
 
-public class UnitOfWorkFake : IUnitOfWork
+internal class UnitOfWorkFake : IUnitOfWork
 {
-    public ICustomerRepository CustomerRepository { get; }
-    public IProductRepository ProductRepository { get; }
+    private readonly IDbFake _db;
 
-    public UnitOfWorkFake(IUnitOfWorkFakeLoader loader,
-        ICustomerRepository customerRepository,
-        IProductRepository productRepository)
+    public UnitOfWorkFake(
+        IDbFake db,
+        IServiceProvider serviceProvider,
+        IUnitOfWorkFakeLoader loader)
     {
-        CustomerRepository = customerRepository;
-        ProductRepository = productRepository;
-
-        loader.LoadInto(this);
+        _db = db;
+        loader.LoadInto(this, serviceProvider);
     }
+
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() => 1, cancellationToken);
+        return Task.FromResult(_db.SaveChanges());
     }
 }
