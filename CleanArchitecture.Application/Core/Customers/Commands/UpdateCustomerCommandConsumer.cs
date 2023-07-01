@@ -23,7 +23,7 @@ public sealed class UpdateCustomerCommandConsumer : IConsumer<UpdateCustomerComm
         var customer = await _customerRepository.GetByIdAsync(context.Message.Id);
         if (customer is null)
         {
-            await context.RespondAsync(new Result<bool, IDbResult>(new NotFound()));
+            await context.RespondAsync<Result<bool, ValidationFailed>>(new NotFound());
         }
 
         customer.Name = context.Message.Name;
@@ -31,8 +31,8 @@ public sealed class UpdateCustomerCommandConsumer : IConsumer<UpdateCustomerComm
         var result = await _unitOfWork.SaveChangesAsync(context.CancellationToken);
         if (result == 0)
         {
-            await context.RespondAsync(new Result<bool, IDbResult>(new NotSaved()));
+            await context.RespondAsync<Result<bool, ValidationFailed>>(new NotSaved());
         }
-        await context.RespondAsync(new Result<bool, IDbResult>(true));
+        await context.RespondAsync<Result<bool, ValidationFailed>>(true);
     }
 }

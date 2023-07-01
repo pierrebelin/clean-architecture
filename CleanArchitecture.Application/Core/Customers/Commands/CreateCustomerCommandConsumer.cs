@@ -25,8 +25,8 @@ public sealed class CreateCustomerCommandConsumer : IConsumer<CreateCustomerComm
         var result = await _unitOfWork.SaveChangesAsync(context.CancellationToken);
         if (result == 0)
         {
-            await context.RespondAsync(new Result<bool, ValidationFailed>(new ValidationFailed()));
+            await context.RespondAsync<Result<bool, ValidationFailed>>(new ValidationFailed());
         }
-        await context.RespondAsync(new Result<bool, ValidationFailed>(true));
+        await context.RespondAsync<Result<bool, ValidationFailed>>(true);
     }
 }
