@@ -26,6 +26,7 @@ public sealed class CreateCustomerCommandConsumer : IConsumer<CreateCustomerComm
         if (result == 0)
         {
             await context.RespondAsync<Result<bool, ValidationFailed>>(new ValidationFailed());
+            return;
         }
         await context.RespondAsync<Result<bool, ValidationFailed>>(true);
     }

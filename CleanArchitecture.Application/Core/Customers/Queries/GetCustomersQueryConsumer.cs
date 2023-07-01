@@ -20,6 +20,7 @@ public sealed class GetCustomersQueryConsumer : IConsumer<GetCustomersQuery>
         if (!customers.Any())
         {
             await context.RespondAsync<Result<IEnumerable<Customer>, NotFound>>(new NotFound());
+            return;
         }
         await context.RespondAsync<Result<IEnumerable<Customer>, NotFound>>(customers);
     }

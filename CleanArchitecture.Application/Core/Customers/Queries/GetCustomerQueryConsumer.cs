@@ -22,9 +22,8 @@ public sealed class GetCustomerQueryConsumer : IConsumer<GetCustomerQuery>
         if (customer == null)
         {
             await context.RespondAsync<Result<Customer, NotFound>>(new NotFound());
+            return;
         }
         await context.RespondAsync<Result<Customer, NotFound>>(customer);
     }
 }
-
-

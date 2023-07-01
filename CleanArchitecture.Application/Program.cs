@@ -2,16 +2,19 @@ using Dapper;
 using System.Reflection;
 using CleanArchitecture.Application.Configuration;
 using CleanArchitecture.Application.Core.Customers;
+using CleanArchitecture.Application.Core.Customers.Commands;
+using CleanArchitecture.Application.Core.Customers.Queries;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using CleanArchitecture.Application.Core.Products;
 using CleanArchitecture.Application.Core.Products.Queries;
-using CleanArchitecture.Application.Mediator;
+using CleanArchitecture.Application.Core.Validators;
 using CleanArchitecture.Domain.Persistence;
 using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Persistence.Repositories;
 using HealthChecks.UI.Client;
+using CleanArchitecture.Application.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,29 +22,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddInfrastructure();
+
+
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(GetProductsQuery).GetTypeInfo().Assembly);
 });
 
-//builder.Services.AddMassTransit(_ =>
-//{
-//    _.AddConsumers(typeof(Program).Assembly);
-//    _.AddConsumers(typeof(Program).Assembly);
-//    _.UsingInMemory((context, cfg) =>
-//    {
-//        //cfg.UseSendFilter(typeof(TokenSendFilter<>), context);
-//        //cfg.UsePublishFilter(typeof(TokenPublishFilter<>), context);
-//        cfg.UseConsumeFilter(typeof(PerformanceBehaviour<>), context);
-
-//        //cfg.ConfigureEndpoints(context);
-//    });
-//});
-
+// https://github.com/MassTransit/MassTransit/discussions/3310
 builder.Services.AddMediator(x =>
 {
     x.AddConsumers(typeof(Program).Assembly);
+    x.ConfigureMediator((context, cfg) =>
+    {
+        cfg.UseConsumeFilter(typeof(PerformanceFilter<>), context);
+        cfg.UseFilter(new AddCustomerValidatorFilter());
+        //cfg.ConnectConsumerConfigurationObserver(new MessageFilterConfigurationObserver());
+        //cfg.ConnectConsumeObserver(new MessageFilterConfigurationObserver());
+        //cfg.UseFilter(typeof(PerformanceFilter<>), typeof(CreateCustomerCommand));
+    });
 });
 
 

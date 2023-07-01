@@ -21,15 +21,17 @@ public sealed class DeleteCustomerCommandConsumer : IConsumer<DeleteCustomerComm
         var customer = await _customerRepository.GetByIdAsync(context.Message.Id);
         if (customer is null)
         {
-            await context.RespondAsync<Result<bool, ValidationFailed>>(new NotSaved());
+            await context.RespondAsync<Result<bool, IDbResult>>(new NotSaved());
+            return;
         }
 
         _customerRepository.Remove(customer);
         var result = await _unitOfWork.SaveChangesAsync(context.CancellationToken);
         if (result == 0)
         {
-            await context.RespondAsync<Result<bool, ValidationFailed>>(new NotSaved());
+            await context.RespondAsync<Result<bool, IDbResult>>(new NotSaved());
+            return;
         }
-        await context.RespondAsync<Result<bool, ValidationFailed>>(true);
+        await context.RespondAsync<Result<bool, IDbResult>>(true);
     }
 }

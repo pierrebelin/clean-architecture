@@ -24,6 +24,7 @@ public sealed class UpdateCustomerCommandConsumer : IConsumer<UpdateCustomerComm
         if (customer is null)
         {
             await context.RespondAsync<Result<bool, ValidationFailed>>(new NotFound());
+            return;
         }
 
         customer.Name = context.Message.Name;
@@ -32,6 +33,7 @@ public sealed class UpdateCustomerCommandConsumer : IConsumer<UpdateCustomerComm
         if (result == 0)
         {
             await context.RespondAsync<Result<bool, ValidationFailed>>(new NotSaved());
+            return;
         }
         await context.RespondAsync<Result<bool, ValidationFailed>>(true);
     }

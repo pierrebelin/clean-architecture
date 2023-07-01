@@ -2,14 +2,14 @@
 using MassTransit;
 using MediatR;
 
-namespace CleanArchitecture.Application.Mediator
+namespace CleanArchitecture.Application.Filters
 {
-    public class PerformanceBehaviour<T> : IFilter<ConsumeContext<T>> where T : class
+    public class PerformanceFilter<T> : IFilter<ConsumeContext<T>> where T : class
     {
         private readonly Stopwatch _timer;
         private readonly ILogger<T> _logger;
 
-        public PerformanceBehaviour(ILogger<T> logger)
+        public PerformanceFilter(ILogger<T> logger)
         {
             _timer = new Stopwatch();
             _logger = logger;
