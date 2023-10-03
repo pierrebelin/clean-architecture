@@ -5,11 +5,12 @@ namespace CleanArchitecture.Infrastructure.Persistence;
 
 public class EfDbContext : DbContext
 {
-    public virtual DbSet<Product> Products { get; set; }
+    protected readonly string _connectionString;
     public virtual DbSet<Customer> Customers { get; set; }
 
-    public EfDbContext()
+    public EfDbContext(string connectionString)
     {
+        _connectionString = connectionString;
     }
 
     public EfDbContext(DbContextOptions<EfDbContext> options) : base(options)
@@ -18,6 +19,7 @@ public class EfDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.UseSqlite(_connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

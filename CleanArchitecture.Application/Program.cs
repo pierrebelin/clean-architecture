@@ -2,19 +2,18 @@ using Dapper;
 using System.Reflection;
 using CleanArchitecture.Application.Configuration;
 using CleanArchitecture.Application.Core.Customers;
-using CleanArchitecture.Application.Core.Customers.Commands;
-using CleanArchitecture.Application.Core.Customers.Queries;
+using CleanArchitecture.Application.Core.Customers.CreateCustomer;
+using CleanArchitecture.Application.Core.Customers.DeleteCustomer;
+using CleanArchitecture.Application.Core.Customers.GetCustomer;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using CleanArchitecture.Application.Core.Products;
-using CleanArchitecture.Application.Core.Products.Queries;
-using CleanArchitecture.Application.Core.Validators;
+using CleanArchitecture.Application.Mediator.Dispatcher;
+using CleanArchitecture.Application.Mediator.Filters;
 using CleanArchitecture.Domain.Persistence;
 using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Persistence.Repositories;
 using HealthChecks.UI.Client;
-using CleanArchitecture.Application.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,24 +22,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(GetProductsQuery).GetTypeInfo().Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(GetCustomerQuery).GetTypeInfo().Assembly);
 });
 
 // https://github.com/MassTransit/MassTransit/discussions/3310
 builder.Services.AddMediator(x =>
 {
-    x.AddConsumers(typeof(Program).Assembly);
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.AddConsumers(typeof(CreateCustomerCommandConsumer).Assembly);
     x.ConfigureMediator((context, cfg) =>
     {
+        cfg.UseConsumeFilter(typeof(ExceptionBehaviorFilter<>), context);
         cfg.UseConsumeFilter(typeof(PerformanceFilter<>), context);
-        cfg.UseFilter(new AddCustomerValidatorFilter());
+        cfg.UseFilter(new CreateCustomerValidator());
         //cfg.ConnectConsumerConfigurationObserver(new MessageFilterConfigurationObserver());
         //cfg.ConnectConsumeObserver(new MessageFilterConfigurationObserver());
         //cfg.UseFilter(typeof(PerformanceFilter<>), typeof(CreateCustomerCommand));
     });
+    // x.AddSagaStateMachine<CustomerDeletionStateMachine, CustomerDeletionSagaState, CustomerDeletionSagaStateDefinition>().InMemoryRepository();
 });
 
 
@@ -56,10 +58,11 @@ if (dbSettings == null)
     throw new Exception("There is no db settings");
 }
 
-builder.Services.AddDbContext<EfDbContext>(options => options.UseSqlite(dbSettings.ConnectionString));
+builder.Services.AddDbContext<EfDbContext>();
+builder.Services.AddTransient<EfDbContext>(_ => new EfDbContext(dbSettings.ConnectionString));
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
-builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddTransient<IDispatcher, MassTransitDispatcher>();
 
 builder.Services.AddHealthChecks()
     .AddCheck<PersistenceHealthCheck>(nameof(PersistenceHealthCheck));
@@ -71,7 +74,6 @@ SqlMapper.RemoveTypeMap(typeof(Guid?));
 var app = builder.Build();
 
 app.AddCustomersMapEndpoints();
-app.AddProductsMapEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

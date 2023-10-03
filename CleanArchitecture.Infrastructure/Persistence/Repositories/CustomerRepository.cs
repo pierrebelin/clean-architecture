@@ -15,7 +15,7 @@ public class CustomerRepository : ICustomerRepository
 
     public Task<Customer?> GetByIdAsync(Guid id)
     {
-        return _dbContext.Customers.FirstOrDefaultAsync(_ => _.Id == id);
+        return _dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public void Update(Customer customer)
